@@ -79,3 +79,4 @@ if __name__ == "__main__":
         copy_template("%s/CMakeLists_test.txt" % templates_dir, "%s/test/%s/CMakeLists.txt" % (project_dir, test_project_name), variables)
         copy_template("%s/Doxyfile" % templates_dir, "%s/doc/Doxyfile" % project_dir, variables)
         copy_template("%s/main_test.cpp" % templates_dir, "%s/test/%s/main.cpp" % (project_dir, test_project_name))
+        copy_template("%s/template.gitignore" % templates_dir, "%s/.gitignore" % project_dir)
