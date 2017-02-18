@@ -1,0 +1,9 @@
+include_directories(../../include)
+
+file(GLOB TEST_SOURCES *.cpp)
+
+add_executable(@TEST_PROJECT_NAME@ ${TEST_SOURCES})
+
+target_link_libraries(@TEST_PROJECT_NAME@ libgtest libgmock)
+
+add_test(NAME @TEST_PROJECT_NAME@ COMMAND @TEST_PROJECT_NAME@)

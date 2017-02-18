@@ -1,0 +1,79 @@
+#!/usr/bin/env python
+
+import os, sys
+
+def copy_template(template_path, destination_path, variables = None):
+    with open(template_path, "r") as template, open(destination_path, "w") as destination:
+        if variables is None:
+            destination.write(template.read())
+        else:
+            contents = template.read()
+
+            for name, value in variables.iteritems():
+                contents = contents.replace("@%s@" % name, value)
+
+            destination.write(contents)
+
+def print_usage():
+    print("Usage: cpproj project_name [options]")
+    print("Options:")
+    print("  --library    create a library project instead of an executable")
+    print("  --help       display this help message")
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print_usage()
+    else:
+        is_library = False
+
+        for arg in sys.argv[2:]:
+            if arg == "--library":
+                is_library = True
+            elif arg == "--help":
+                print_usage()
+                sys.exit(0)
+            else:
+                print("Unrecognized argument: %s" % arg)
+                sys.exit(1)
+
+        script_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
+        working_dir = os.getcwd()
+
+        project_name = sys.argv[1]
+        project_version_name = project_name.upper()
+        test_project_name = "test_" + project_name if "_" in project_name else "test" + project_name
+        project_target_instruction = "%s(%s ${PROJECT_SOURCES})" % ("add_library" if is_library else "add_executable", project_name)
+
+        project_directory = "%s/%s" % (working_dir, project_name)
+
+        directories = [
+            "build",
+            "doc",
+            "include",
+            "include/%s" % project_name,
+            "src",
+            "test",
+            "test/%s" % test_project_name
+        ]
+
+        print("Creating %s..." % project_directory)
+        os.mkdir(project_directory)
+
+        for directory in directories:
+            os.mkdir("%s/%s" % (project_directory, directory))
+
+        variables = {
+            "PROJECT_NAME": project_name,
+            "PROJECT_VERSION_NAME": project_version_name,
+            "TEST_PROJECT_NAME": test_project_name,
+            "PROJECT_TARGET_INSTRUCTION": project_target_instruction
+        }
+
+        templates_dir = "%s/templates" % script_dir
+
+        copy_template("%s/CMakeLists_root.txt" % templates_dir, "%s/CMakeLists.txt" % project_directory, variables)
+        copy_template("%s/CMakeLists_src.txt" % templates_dir, "%s/src/CMakeLists.txt" % project_directory, variables)
+        copy_template("%s/CMakeLists_gtest.txt" % templates_dir, "%s/test/CMakeLists.txt" % project_directory, variables)
+        copy_template("%s/CMakeLists_test.txt" % templates_dir, "%s/test/%s/CMakeLists.txt" % (project_directory, test_project_name), variables)
+        copy_template("%s/Doxyfile" % templates_dir, "%s/doc/Doxyfile" % project_directory, variables)
+        copy_template("%s/main_test.cpp" % templates_dir, "%s/test/%s/main.cpp" % (project_directory, test_project_name))

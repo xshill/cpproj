@@ -1,0 +1,5 @@
+file(GLOB PROJECT_SOURCES *.cpp)
+
+include_directories(../include)
+
+@PROJECT_TARGET_INSTRUCTION@
