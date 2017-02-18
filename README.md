@@ -5,7 +5,7 @@ Google Test.
 
 ##Usage
 
-Run `/path/to/cpproj/cpproj project_name` to create a project for an executable.
+Run `/path/to/cpproj/cpproj project_name` to create a project for an executable.  
 Run `/path/to/cpproj/cpproj project_name --library` to create a project for a library.
 
 ##The structure
