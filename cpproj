@@ -40,30 +40,32 @@ if __name__ == "__main__":
         working_dir = os.getcwd()
 
         project_name = sys.argv[1]
+        project_name_lower = project_name.lower()
         project_version_name = project_name.upper()
-        test_project_name = "test_" + project_name if "_" in project_name else "test" + project_name
-        project_target_instruction = "%s(%s ${PROJECT_SOURCES})" % ("add_library" if is_library else "add_executable", project_name)
+        test_project_name = ("test_%s" if "_" in project_name_lower else "test%s") % project_name_lower
+        project_target_instruction = "%s(%s ${PROJECT_SOURCES})" % ("add_library" if is_library else "add_executable", project_name_lower)
 
-        project_directory = "%s/%s" % (working_dir, project_name)
+        project_dir = "%s/%s" % (working_dir, project_name_lower)
 
         directories = [
             "build",
             "doc",
             "include",
-            "include/%s" % project_name,
+            "include/%s" % project_name_lower,
             "src",
             "test",
             "test/%s" % test_project_name
         ]
 
-        print("Creating %s..." % project_directory)
-        os.mkdir(project_directory)
+        print("Creating %s..." % project_dir)
+        os.mkdir(project_dir)
 
         for directory in directories:
-            os.mkdir("%s/%s" % (project_directory, directory))
+            os.mkdir("%s/%s" % (project_dir, directory))
 
         variables = {
             "PROJECT_NAME": project_name,
+            "PROJECT_NAME_LOWER": project_name_lower,
             "PROJECT_VERSION_NAME": project_version_name,
             "TEST_PROJECT_NAME": test_project_name,
             "PROJECT_TARGET_INSTRUCTION": project_target_instruction
@@ -71,9 +73,9 @@ if __name__ == "__main__":
 
         templates_dir = "%s/templates" % script_dir
 
-        copy_template("%s/CMakeLists_root.txt" % templates_dir, "%s/CMakeLists.txt" % project_directory, variables)
-        copy_template("%s/CMakeLists_src.txt" % templates_dir, "%s/src/CMakeLists.txt" % project_directory, variables)
-        copy_template("%s/CMakeLists_gtest.txt" % templates_dir, "%s/test/CMakeLists.txt" % project_directory, variables)
-        copy_template("%s/CMakeLists_test.txt" % templates_dir, "%s/test/%s/CMakeLists.txt" % (project_directory, test_project_name), variables)
-        copy_template("%s/Doxyfile" % templates_dir, "%s/doc/Doxyfile" % project_directory, variables)
-        copy_template("%s/main_test.cpp" % templates_dir, "%s/test/%s/main.cpp" % (project_directory, test_project_name))
+        copy_template("%s/CMakeLists_root.txt" % templates_dir, "%s/CMakeLists.txt" % project_dir, variables)
+        copy_template("%s/CMakeLists_src.txt" % templates_dir, "%s/src/CMakeLists.txt" % project_dir, variables)
+        copy_template("%s/CMakeLists_gtest.txt" % templates_dir, "%s/test/CMakeLists.txt" % project_dir, variables)
+        copy_template("%s/CMakeLists_test.txt" % templates_dir, "%s/test/%s/CMakeLists.txt" % (project_dir, test_project_name), variables)
+        copy_template("%s/Doxyfile" % templates_dir, "%s/doc/Doxyfile" % project_dir, variables)
+        copy_template("%s/main_test.cpp" % templates_dir, "%s/test/%s/main.cpp" % (project_dir, test_project_name))
