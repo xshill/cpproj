@@ -9,8 +9,8 @@ def copy_template(template_path, destination_path, variables = None):
         else:
             contents = template.read()
 
-            for name, value in variables.iteritems():
-                contents = contents.replace("@%s@" % name, value)
+            for name  in variables.keys():
+                contents = contents.replace("@%s@" % name, variables[name])
 
             destination.write(contents)
 
